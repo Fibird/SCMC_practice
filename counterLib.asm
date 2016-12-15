@@ -7,17 +7,22 @@
 		sjmp main
 
 		org 000bh
-		mov a,r0
+		mov a,#10
+		subb a,r0
+		jz exit		;计数到10清零
+		mov a,r0		
 		mov dptr,#0040h
-		movc a,@a+dptr
+		movc a,@a+dptr	
 		mov dptr,#pa_add
 		movx @dptr,a
 		
 		mov a,r0
 		inc a
 		mov r0,a
-		;cjne a,#10,
-
+		
+exit:	mov r0,#0
+		reti
+		
 main:	mov r0,#0
 		mov dptr,#pcon_add	  ;设置8255
 		mov a,#81h
@@ -28,7 +33,9 @@ main:	mov r0,#0
 		mov tl0,#00h
 		setb tr0
 
-		sjmp $
+here:	nop
+		nop
+		sjmp here
 
 		org 0040h
 		db 3fh,06h,5bh,4fh,66h,6dh,7dh,07h,7fh,90h
