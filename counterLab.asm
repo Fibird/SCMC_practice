@@ -11,9 +11,9 @@
 		subb a,r0
 		jz exit		;计数到10清零
 		mov a,r0		
-		mov dptr,#0040h
-		movc a,@a+dptr	
-		mov dptr,#pa_add
+		mov dptr,#disdata
+		movc a,@a+dptr		  ;设置段码
+		mov dptr,#pa_add	
 		movx @dptr,a
 		
 		mov a,r0
@@ -27,6 +27,11 @@ main:	mov r0,#0
 		mov dptr,#pcon_add	  ;设置8255
 		mov a,#81h
 		movx @dptr,a
+		mov dptr,#pb_add
+		mov a,#0f0h			  ;设置位码
+		movx @dptr,a
+
+		mov ie,#82h		 ;允许定时器0中断
 
 		mov tmod,#10h	 ;计数器设置
 		mov th0,#00h
@@ -37,7 +42,7 @@ here:	nop
 		nop
 		sjmp here
 
-		org 0040h
+disdata:
 		db 3fh,06h,5bh,4fh,66h,6dh,7dh,07h,7fh,90h
 
 		end
