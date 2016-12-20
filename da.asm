@@ -1,0 +1,14 @@
+   MOV 50H,#33H
+   MOV 51H,#89H
+   MOV 52H,	#99H
+   MOV 53H,#88H
+
+   MOV A,50H
+   ADD A,52H
+   DA A
+   MOV 54H,A
+   MOV A,51H
+   ADDC A,53H
+   DA A
+   MOV 55H,A
+    END
