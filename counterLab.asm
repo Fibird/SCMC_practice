@@ -19,8 +19,8 @@ main:	mov r0,#0
 		movx @dptr,a
 
 		mov ie,#82h		 ;允许定时器0中断
-		mov tmod,#01h	 ;计数器设置
-		mov th0,#0bh
+		mov tmod,#01h	 ;计数器工作方式设置
+		mov th0,#0bh	 ;设置计数初值
 		mov tl0,#0cdh
 		setb tr0
 		mov 30h,#08h
@@ -39,12 +39,12 @@ isr_t0:	mov th0,#0bh
 		mov a,r0
 		inc a
 		mov r0,a
-		cjne a,#0ah,disp
+		cjne a,#0ah,disp	;判断计数是否到达10
 		mov r0,#0
 
 disp:	mov a,r0		
 		mov dptr,#disdata
-		movc a,@a+dptr		  ;设置段码
+		movc a,@a+dptr		  ;查表设置段码
 		mov dptr,#pb_add	
 		movx @dptr,a
 		mov 30h,#08h
