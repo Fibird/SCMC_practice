@@ -2,9 +2,8 @@
 		pb_add equ 0FF21h
 		pc_add equ 0FF22h
 		pcon_add equ 0ff23h
-		red equ 0010b
-		yellow equ 1000b
-		green equ 0100b
+		time0 equ 30
+		time1 equ 60
 		 
 		org 0000h
 main:	lcall clrreg
@@ -15,32 +14,28 @@ main:	lcall clrreg
 
 		mov ie,#00h		 ;关中断
 
-here:	lcall coptime0
-		nop
-		lcall coptime1
-		sjmp here
-
-;R0和R1表示南北的计时时间，R2和R3表示东西的计时时间
-Coptime0:;调用该延时程序时，
+here:	;R0和R1表示南北的计时时间，R2和R3表示东西的计时时间
 		;需先向r4寄存器写入时间单位为秒
-		mov r4,#60
-loop0:	mov r5,#30	
+		mov r4,#time1
+loop0:	mov r5,#time0	
 loop1:	mov tmod,#01h	 ;计数器工作方式设置
 		mov th0,#00h	 ;设置计数初值
 		mov tl0,#00dh
 		setb tr0
-again:	jbc tf0,again
+again:	jnb tf0,again
+		clr tf0
+		;clr tr0
 		djnz r5,loop1
 
-		cjne r0,#10,notclr 
+		cjne r0,#10,check0 
 		mov r0,#0
 		setb p1.2	;东西红灯亮
 		inc r1
-		cjne r2,#10,notclr
+check0:	cjne r2,#10,check1
 		mov r2,#0
 		setb p1.4	;南北黄灯亮
 		inc r7
-		cjne r7,#2,notclr
+check1:	cjne r7,#2,notclr
 		inc r3
 		setb p1.5	;南北绿灯亮
 		clr p1.4	;南北黄灯灭
@@ -51,28 +46,28 @@ notclr:	lcall disp
 		inc r2
 		djnz r4,loop0
 		lcall clrreg
-		ret
-
-;R0和R1表示东西计时时间，R2和R3表示南北的计时时间
-Coptime1:
-		mov r4,#60
-loop2:	mov r5,#30	
+		nop
+		;R0和R1表示东西计时时间，R2和R3表示南北的计时时间
+		mov r4,#time1
+loop2:	mov r5,#time0	
 loop3:	mov tmod,#01h	 ;计数器工作方式设置
 		mov th0,#00h	 ;设置计数初值
 		mov tl0,#00dh
 		setb tr0
-again1:	jbc tf0,again1
+again1:	jnb tf0,again1
+		clr tf0
+		;clr tr0
 		djnz r5,loop3
 
-		cjne r2,#10,notclr 
+		cjne r2,#10,check2 
 		mov r2,#0
 		setb p1.6	;南北红灯亮
 		inc r3
-		cjne r0,#10,notclr
+check2:	cjne r0,#10,check3
 		mov r0,#0
 		setb p1.0	;东西黄灯亮
 		inc r7
-		cjne r7,#2,notclr1
+check3:	cjne r7,#2,notclr1
 		inc r1
 		setb p1.1	;东西绿灯亮
 		clr p1.0	;东西黄灯灭
@@ -83,14 +78,14 @@ notclr1:call disp
 		inc r0
 		djnz r4,loop2
 		lcall clrreg
-		ret
+		sjmp here
 
 		;子程序disp，调用前需向R0和R1寄存器写值
 		;寄存器R0存放个位，寄存器R1存放十位
 disp:	mov dptr,#pb_add	;消隐
 		mov a,#0ffh
 		movx @dptr,a
-		mov a,#0fch
+		mov a,#00
 		mov dptr,#pa_add
 		movx @dptr,a 
 				
@@ -100,13 +95,13 @@ disp:	mov dptr,#pb_add	;消隐
 		mov dptr,#pb_add	
 		movx @dptr,a
 		mov dptr,#pa_add	 ;设置位码
-		mov a,#0fdh			  
+		mov a,#0cch			  
 		movx @dptr,a 
 		
 		mov dptr,#pb_add	;消隐
 		mov a,#0ffh
 		movx @dptr,a
-		mov a,#0fch
+		mov a,#00
 		mov dptr,#pa_add
 		movx @dptr,a
 
@@ -116,13 +111,13 @@ disp:	mov dptr,#pb_add	;消隐
 		mov dptr,#pb_add	
 		movx @dptr,a
 		mov dptr,#pa_add	 ;设置位码
-		mov a,#0fdh			  
+		mov a,#0cch			  
 		movx @dptr,a 
 		
 		mov dptr,#pb_add	;消隐
 		mov a,#0ffh
 		movx @dptr,a
-		mov a,#0fch
+		mov a,#00
 		mov dptr,#pa_add
 		movx @dptr,a 
 				
@@ -132,13 +127,13 @@ disp:	mov dptr,#pb_add	;消隐
 		mov dptr,#pb_add	
 		movx @dptr,a
 		mov dptr,#pa_add	 ;设置位码
-		mov a,#7fh			  
+		mov a,#0cch			  
 		movx @dptr,a 
 		
 		mov dptr,#pb_add	;消隐
 		mov a,#0ffh
 		movx @dptr,a
-		mov a,#0fch
+		mov a,#00
 		mov dptr,#pa_add
 		movx @dptr,a
 
@@ -148,7 +143,7 @@ disp:	mov dptr,#pb_add	;消隐
 		mov dptr,#pb_add	
 		movx @dptr,a
 		mov dptr,#pa_add	 ;设置位码
-		mov a,#0bfh			  
+		mov a,#0cch			  
 		movx @dptr,a 		
 		ret
 
@@ -159,6 +154,7 @@ clrreg:	mov r0,#0 	;东西个位
 		mov r3,#0	;南北十位
 		mov a,#0
 		mov r7,#0
+		mov p1,#0
 		ret
 disdata:
 		db 0c0h,0f9h,0a4h,0b0h,99h,92h,82h,0f8h,80h,90h
