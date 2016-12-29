@@ -22,6 +22,7 @@ main:	mov r0,#0
 		setb tr0
 		mov 30h,#08h
 		clr f0
+		mov p1,#0d7h
 
 here:	nop
 		nop
@@ -46,15 +47,15 @@ check0:	cjne r2,#10,notclr
 		inc r7
 check1:	cjne r7,#2,notclr
 carry:	inc r3
-		clr p1.4		 
-		setb p1.5			
+		setb p1.4		 
+		clr p1.5			
 notclr:	inc r0
 		inc r2
 		
 		cjne r1,#6,ret0
 		setb f0
 		call clrreg
-
+		mov p1,#7dh
 next:	mov 30h,#08h
 		cjne r2,#10,check2 
 		mov r2,#0
@@ -65,15 +66,15 @@ check2:	cjne r0,#10,notclr1
 		inc r7
 check3:	cjne r7,#2,notclr1
 carry1:	inc r1
-		clr p1.0		 
-		setb p1.1
+		setb p1.0		 
+		clr p1.1
 notclr1:inc r2
 		inc r0
 
 		cjne r3,#6,ret0
 		clr f0
 		call clrreg	
-			 		
+		mov p1,#0d7h	 		
 ret0:	reti
 
 	
