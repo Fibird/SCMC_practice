@@ -2,6 +2,7 @@
 		pb_add equ 0FF21h
 		pc_add equ 0FF22h
 		pcon_add equ 0ff23h
+		intTimes equ 0ah
 		
 		org 0000h
 		ljmp main
@@ -20,7 +21,7 @@ main:	mov r0,#0
 		mov th0,#0bh	 
 		mov tl0,#0cdh
 		setb tr0
-		mov 30h,#08h
+		mov 30h,#intTimes
 		clr f0
 		mov p1,#0bdh
 
@@ -40,17 +41,13 @@ isr_t0:	mov th0,#0bh
 		
 		jb f0,next
 		mov r0,50h
-		mov r2,50h
-		mov 30h,#08h
+		mov 30h,#intTimes
 		cjne r0,#10,check0 
 		mov 50h,#0		
 		inc r1
-check0:	cjne r2,#10,notclr
-		mov 50h,#0
 		inc r3
-check1:	cjne r3,#5,notclr  ;time to 50s
-		mov r3,#0
-		;mov p1,#07dh	
+check0:	cjne r3,#5,notclr  ;time to 50s
+		mov r3,#0	
 		setb p1.1
 		clr p1.0		
 notclr:	inc 50h
@@ -60,17 +57,13 @@ notclr:	inc 50h
 		call clrreg
 		mov p1,#0dbh
 next:	mov r0,50h
-		mov r2,50h
-		mov 30h,#08h
-		cjne r2,#10,check2 
-		mov 50h,#0
-		inc r3
-check2:	cjne r0,#10,notclr1
+		mov 30h,#intTimes
+		cjne r0,#10,check1 
 		mov 50h,#0
 		inc r1
-check3:	cjne r1,#5,notclr1
+		inc r3
+check1:	cjne r1,#5,notclr1
 		mov r1,#0
-		;mov p1,#0d7h
 		setb p1.5
 		clr p1.4
 notclr1:inc 50h
@@ -149,13 +142,10 @@ disp:	mov dptr,#pb_add
 		
 			
 clrreg:	mov r0,#0 			 
-		mov r1,#0			
-		mov r2,#0			 
+		mov r1,#0						 
 		mov r3,#0		
 		mov a,#0
-		mov r7,#0
 		mov 50h,#0
-		;mov p1,#0ffh
 		ret
 disdata:
 		db 0c0h,0f9h,0a4h,0b0h,99h,92h,82h,0f8h,80h,90h,0c0h
