@@ -137,8 +137,7 @@ disp:	mov dptr,#pb_add	;hiding
 		mov a,#0efh			  
 		movx @dptr,a 		
 		ret
-		
-			
+					
 clrreg:	mov r0,#0 			 
 		mov r1,#0						 
 		mov r3,#0		
