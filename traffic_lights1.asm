@@ -99,16 +99,16 @@ disp:	mov r3,#0feh	  ;存放位码
 loop1:	mov a,@r0	
 		mov dptr,#disdata
 		movc a,@a+dptr		 
-		mov dptr,#pb_add	
-		movx @dptr,a
+		mov dptr,#pb_add		
+		movx @dptr,a		;发送段码
 		mov dptr,#pa_add	 
 		mov a,r3			  
-		movx @dptr,a 
+		movx @dptr,a		;发送位码 
 		
-		mov dptr,#pb_add	
-		mov a,#0ffh
-		movx @dptr,a
-		mov a,#0ffh
+		;mov dptr,#pb_add	
+		;mov a,#0ffh
+		;movx @dptr,a
+		mov a,#0ffh			;消隐
 		mov dptr,#pa_add
 		movx @dptr,a
 
@@ -118,8 +118,8 @@ loop2:	nop
 
 		inc r0
 		mov a,r3 
-		jnb acc.5,ret1
-		rl a
+		jnb acc.5,ret1		;判断是否扫描到第5位
+		rl a				;移位以扫描下一位
 		mov r3,a
 		jmp loop1
 				
